@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Staff</title>
+    <style>
+        /* Styling remains unchanged */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 50px auto;
+            text-align: left;
+        }
+
+        a {
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1rem;
+        color: #3498db;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dcdcdc;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #8e44ad;
+            outline: none;
+            box-shadow: 0 0 8px rgba(142, 68, 173, 0.4);
+            background: #fff;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 14px;
+            background: #8e44ad;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background: #732d91;
+            box-shadow: 0 6px 20px rgba(115, 45, 145, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .form-group button:active {
+            background: #5b216d;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .form-group button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Staff</h1>
+        <form id="addStaffForm">
+            <div class="form-group">
+                <label for="staffName">Name</label>
+                <input type="text" id="staffName" name="staffName" required>
+            </div>
+            <div class="form-group">
+                <label for="staffEmail">Email</label>
+                <input type="email" id="staffEmail" name="staffEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="staffCourse">Course</label>
+                <select id="staffCourse" name="staffCourse" required>
+                    <option value="">Select Course</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="staffPassword">Password</label>
+                <input type="password" id="staffPassword" name="staffPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="qualification">Qualification</label>
+                <input type="text" id="qualification" name="qualification" required>
+            </div>
+            <div class="form-group">
+                <label for="specialization">Area of Specialization</label>
+                <input type="text" id="specialization" name="specialization" required>
+            </div>
+            <div class="form-group">
+                <label for="designation">Designation</label>
+                <input type="text" id="designation" name="designation" required>
+            </div>
+            <div class="form-group">
+                <label for="dateOfJoining">Date of Joining</label>
+                <input type="date" id="dateOfJoining" name="dateOfJoining" required>
+            </div>
+            <div class="form-group">
+                <label for="profDesignationDate">Date of Designation as Professor</label>
+                <input type="date" id="profDesignationDate" name="profDesignationDate" required>
+            </div>
+            <div class="form-group">
+                <label for="currentlyAssociated">Currently Associated (Y/N)</label>
+                <select id="currentlyAssociated" name="currentlyAssociated" required>
+                    <option value="Y">Yes</option>
+                    <option value="N">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="uniqueId">Unique ID</label>
+                <input type="text" id="uniqueId" name="uniqueId" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit</button>
+            </div>
+            <a href="admin_dashboard.html">Go to admin-dashboard</a>
+        </form>
+    </div>
+
+    <script>
+        
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('addStaffForm');
+    const courseSelect = document.getElementById('staffCourse');
+    const courses = JSON.parse(localStorage.getItem('courses')) || [];
+
+    // Populate course options from localStorage
+    courses.forEach(course => {
+      const option = document.createElement('option');
+      option.value = course;
+      option.textContent = course;
+      courseSelect.appendChild(option);
+    });
+
+    // Validation functions
+    function validateName(name) {
+      return /^[A-Za-z\s]{2,}$/.test(name);
+    }
+
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function validatePassword(password) {
+      return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+    }
+
+    function validateUniqueId(id) {
+      return /^[A-Za-z0-9]{5,}$/.test(id);
+    }
+
+    // Form submission handler
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const name = document.getElementById('staffName').value;
+      const email = document.getElementById('staffEmail').value;
+      const password = document.getElementById('staffPassword').value;
+      const uniqueId = document.getElementById('uniqueId').value;
+      const dateOfJoining = new Date(document.getElementById('dateOfJoining').value);
+      const profDesignationDate = new Date(document.getElementById('profDesignationDate').value);
+
+      if (!validateName(name)) {
+        alert('Invalid name. It should only contain alphabets and spaces.');
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        alert('Invalid email format.');
+        return;
+      }
+
+      if (!validatePassword(password)) {
+        alert('Password must be at least 8 characters long and include letters, numbers, and special characters.');
+        return;
+      }
+
+      if (profDesignationDate <= dateOfJoining) {
+        alert('Date of Designation as Professor must be after Date of Joining.');
+        return;
+      }
+
+      if (!validateUniqueId(uniqueId)) {
+        alert('Unique ID must be alphanumeric and at least 5 characters long.');
+        return;
+      }
+
+      // Prepare staff data for submission
+      const staffData = {
+        name,
+        email,
+        course: courseSelect.value,
+        password,
+        qualification: document.getElementById('qualification').value,
+        specialization: document.getElementById('specialization').value,
+        designation: document.getElementById('designation').value,
+        date_of_joining: document.getElementById('dateOfJoining').value,
+        professor_designation_date: document.getElementById('profDesignationDate').value,
+        currently_associated: document.getElementById('currentlyAssociated').value,
+        unique_id: uniqueId,
+      };
+
+      // Make the POST request to the backend
+      fetch('http://localhost:3000/add-staff', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(staffData),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Staff added successfully!');
+            form.reset();
+          } else {
+            alert('Error adding staff: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to connect to the server.');
+        });
+    });
+  });
+
+    </script>
+</body>
+</html>

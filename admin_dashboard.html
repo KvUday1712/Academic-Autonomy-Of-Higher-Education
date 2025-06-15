@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        
+    /* Overall Page Styling */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: #fff;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Container Styling */
+    .container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        max-width: 900px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Header Styling */
+    h1 {
+        font-size: 2.5rem;
+        color: #fff;
+        margin-bottom: 30px;
+    }
+
+    /* Option Button Styling */
+    .option {
+        margin: 15px 0;
+    }
+
+    .option a {
+        display: block;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #43cea2, #185a9d);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .option a:hover {
+        background: linear-gradient(135deg, #185a9d, #43cea2);
+        box-shadow: 0 5px 15px rgba(67, 206, 162, 0.5);
+        transform: translateY(-3px);
+    }
+
+    .option a:active {
+        background: #155074;
+        transform: translateY(0);
+    }
+
+    /* Dropdown Styling */
+    .dropdown {
+        display: none;
+        margin-top: 10px;
+    }
+
+    .dropdown a {
+        padding: 12px;
+        background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin: 5px 0;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .dropdown a:hover {
+        background: linear-gradient(135deg, #ff7eb3, #ff758c);
+        box-shadow: 0 5px 10px rgba(255, 120, 180, 0.4);
+        transform: scale(1.05);
+    }
+
+    /* Logout Section Styling */
+    .logout {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .logout a {
+        font-size: 1.1rem;
+        color: #43cea2;
+        text-decoration: none;
+        font-weight: 700;
+        transition: color 0.3s ease, transform 0.2s ease;
+    }
+
+    .logout a:hover {
+        color: #43d9c0;
+        text-decoration: underline;
+        transform: scale(1.05);
+    }
+
+    /* Animation for Dropdown */
+    .dropdown a {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+    
+    
+    <script>
+        function toggleDropdown(id) {
+            var dropdown = document.getElementById(id);
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <div class="option">
+            <a onclick="toggleDropdown('staffDropdown')">Add Staff</a>
+            <div class="dropdown" id="staffDropdown">
+                <a href="add_staff_profile.html">Add Staff</a>
+                <a href="manage_profile.html">Manage Staff</a>
+            </div>
+        </div>
+        <div class="option">
+            <a onclick="toggleDropdown('courseDropdown')">Add Course</a>
+            <div class="dropdown" id="courseDropdown">
+                <a href="add-course.html">Add Course</a>
+                <a href="manage-courses.html">Manage Courses</a>
+            </div>
+        </div>
+        <div class="option">
+            <a onclick="toggleDropdown('subjectDropdown')">Add Subject</a>
+            <div class="dropdown" id="subjectDropdown">
+                <a href="add-subject.html">Add Subject</a>
+            </div>
+        </div>
+        <!-- <div class="option">
+            <a onclick="toggleDropdown('sessionDropdown')">Session</a>
+            <div class="dropdown" id="sessionDropdown">
+                <a href="add_session.html">Add Session</a>
+                <a href="manage_session.html">Manage Sessions</a>
+            </div>
+        </div> -->
+        <div class="option">
+            <a onclick="toggleDropdown('studentDropdown')">Student</a>
+            <div class="dropdown" id="studentDropdown">
+                <a href="add_student.html">Add Student</a>
+                <a href="manage_students.html">Manage Students</a>
+            </div>
+        </div>
+        <div class="option">
+            <a href="manage_leave_requests.html">Leave Permissions</a>
+        </div>
+        <div class="logout">
+            <a href="login.html">Logout</a>
+        </div>
+    </div>
+</body>
+</html>

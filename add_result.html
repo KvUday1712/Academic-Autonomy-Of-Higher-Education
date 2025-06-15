@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group select,
+        .form-group input[type="number"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: rgb(255, 0, 0);
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .result-display {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Result</h1>
+        <form id="addResultForm">
+            <div class="form-group">
+                <label for="studentName">Student Name</label>
+                <select id="studentName" name="studentName" required>
+                    <option value="">Select Student</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subjectName">Subject</label>
+                <input type="text" id="subjectName" name="subjectName" required>
+            </div>
+            <div class="form-group">
+                <label for="ia1">IA1</label>
+                <input type="number" id="ia1" name="ia1" min="0" max="100" required>
+            </div>
+            <div class="form-group">
+                <label for="ia2">IA2</label>
+                <input type="number" id="ia2" name="ia2" min="0" max="100" required>
+            </div>
+            <div class="form-group">
+                <label for="ia3">IA3</label>
+                <input type="number" id="ia3" name="ia3" min="0" max="100" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Add Result</button>
+            </div>
+            <div class="error-message" id="error-message"></div>
+        </form>
+        <div class="result-display" id="resultDisplay"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const studentNameSelect = document.getElementById('studentName');
+            const resultDisplay = document.getElementById('resultDisplay');
+
+            // Fetch the student list from the backend
+            fetch('http://localhost:3000/get-students')
+                .then(response => response.json())
+                .then(students => {
+                    if (students.length === 0) {
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'No students available';
+                        studentNameSelect.appendChild(option);
+                        studentNameSelect.disabled = true;
+                        return;
+                    }
+
+                    // Populate the student dropdown with available students
+                    students.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.usn;
+                        option.textContent = student.name;
+                        studentNameSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching students:', error);
+                    alert('Failed to fetch students.');
+                });
+
+            // Handle form submission
+            document.getElementById('addResultForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const student_usn = studentNameSelect.value;
+                const subjectName = document.getElementById('subjectName').value;
+                const ia1 = parseInt(document.getElementById('ia1').value, 10);
+                const ia2 = parseInt(document.getElementById('ia2').value, 10);
+                const ia3 = parseInt(document.getElementById('ia3').value, 10);
+
+                if (!student_usn) {
+                    document.getElementById('error-message').textContent = 'Please select a student.';
+                    return;
+                }
+
+                const resultData = {
+                    student_usn,
+                    subject: subjectName,
+                    ia1,
+                    ia2,
+                    ia3,
+                    course: "Your Course" // You need to specify the course here
+                };
+
+                fetch('http://localhost:3000/add-result', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(resultData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to add result.');
+                    }
+                    return response.text();
+                })
+                .then(message => {
+                    resultDisplay.innerHTML = `<p>${message}</p>`;
+                    document.getElementById('addResultForm').reset();
+                })
+                .catch(error => {
+                    console.error('Error adding result:', error);
+                    resultDisplay.innerHTML = `<p class="error-message">Failed to add result: ${error.message}</p>`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

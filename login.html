@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+       
+    /* General page styling */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #3a6186, #89253e);
+        color: #fff;
+    }
+
+    /* Full-page container */
+    .container {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(12px);
+        padding: 40px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Header styling */
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    /* Form group styling */
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        outline: none;
+        transition: box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="password"]:focus {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    }
+
+    /* Radio buttons styling */
+    .form-group input[type="radio"] {
+        margin-right: 8px;
+    }
+
+    .form-group label[for="admin"],
+    .form-group label[for="staff"],
+    .form-group label[for="student"] {
+        color: #fff;
+        margin-right: 15px;
+        font-size: 0.95rem;
+    }
+
+    /* Button styling */
+    .form-group button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .form-group button:hover {
+        background: linear-gradient(135deg, #feb47b, #ff7e5f);
+        transform: scale(1.05);
+    }
+
+    .form-group button:active {
+        transform: scale(1);
+    }
+
+    /* Error message styling */
+    .error-message {
+        color: #e74c3c;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    /* Smooth animations */
+    .container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+        
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <div class="error-message" id="error-message"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Email</label>
+                <input type="text" id="username" name="username" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div class="form-group">
+                <input type="radio" id="admin" name="userType" value="admin" required />
+                <label for="admin">Admin</label>
+                <input type="radio" id="staff" name="userType" value="staff" />
+                <label for="staff">Staff</label>
+                <input type="radio" id="student" name="userType" value="student" />
+                <label for="student">Student</label>
+            </div>
+            <div class="form-group">
+                <button type="submit">Login</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            var userType = document.querySelector('input[name="userType"]:checked').value;
+            var errorMessage = document.getElementById('error-message');
+
+            // Admin login logic
+            if (userType === 'admin') {
+                if (username === 'admin' && password === 'admin123') {
+                    // Redirect to admin dashboard
+                    window.location.href = 'admin_dashboard.html';
+                } else {
+                    errorMessage.textContent = 'Invalid admin login details. Please try again.';
+                    return;
+                }
+            }
+
+            // If user is staff or student, check credentials against the backend
+            fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username, password: password, userType: userType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirect based on user type
+                    if (userType === 'staff') {
+                        window.location.href = 'staff_dashboard.html';
+                    } else if (userType === 'student') {
+                        window.location.href = 'student_dashboard.html';
+                    }
+                } else {
+                    errorMessage.textContent = data.message || 'Invalid login details. Please try again.';
+                }
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+                errorMessage.textContent = 'An error occurred during login. Please try again later.';
+            });
+        });
+    </script>
+</body>
+</html>

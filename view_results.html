@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+        .result {
+            margin-bottom: 15px;
+        }
+        .result label {
+            font-weight: bold;
+        }
+        .average {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>View Results</h1>
+        <div id="resultsContainer"></div>
+        <a href="student_dashboard.html" class="nav-link">Back to Dashboard</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if the student is logged in
+            var loggedInStudentEmail = localStorage.getItem('loggedInStudentEmail');
+            var loggedInStudentPassword = localStorage.getItem('loggedInStudentPassword');
+
+           
+
+            var resultsContainer = document.getElementById('resultsContainer');
+
+            // Call your API to fetch results from the database based on the logged-in student's credentials
+            fetchResults(resultsContainer);
+        });
+
+        // Function to fetch the results from the database
+        function fetchResults(resultsContainer) {
+            fetch('http://localhost:3000/get-student-marks')  // Correct the endpoint as needed
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        data.forEach(result => {
+                            var resultDiv = document.createElement('div');
+                            resultDiv.className = 'result';
+
+                            // Displaying all details from the student_marks table
+                            resultDiv.innerHTML = `
+                                <p><strong>Student USN:</strong> ${result.student_usn}</p>
+                                <p><strong>Subject:</strong> ${result.subject}</p>
+                                <p><strong>IA1:</strong> ${result.ia1}</p>
+                                <p><strong>IA2:</strong> ${result.ia2}</p>
+                                <p><strong>IA3:</strong> ${result.ia3}</p>
+                                <p><strong>Total Marks:</strong> ${result.total_marks}</p>
+                                <p><strong>Course:</strong> ${result.course}</p>
+                                <p><strong>Email:</strong> ${result.email}</p>
+                            `;
+                            resultsContainer.appendChild(resultDiv);
+                        });
+                    } else {
+                        resultsContainer.innerHTML = '<p>No results found.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching results:', error);
+                    resultsContainer.innerHTML = '<p>Error fetching results. Please try again later.</p>';
+                });
+        }
+    </script>
+</body>
+</html>

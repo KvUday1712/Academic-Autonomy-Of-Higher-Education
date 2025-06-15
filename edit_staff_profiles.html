@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Staff Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        h1 {
+            font-size: 24px;
+            margin-top: 0;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="email"] {
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Staff Profile</h1>
+        <form id="editForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" readonly>
+
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to get query parameters
+        function getQueryParams() {
+            var params = {};
+            window.location.search.substr(1).split("&").forEach(function(item) {
+                var pair = item.split("=");
+                params[pair[0]] = decodeURIComponent(pair[1]);
+            });
+            return params;
+        }
+
+        // Load staff details into form
+        window.onload = function() {
+            var params = getQueryParams();
+            document.getElementById('name').value = params.name;
+            document.getElementById('email').value = params.email;
+        };
+
+        // Handle form submission
+        document.getElementById('editForm').onsubmit = function(event) {
+            event.preventDefault();
+            
+            var staffList = JSON.parse(localStorage.getItem('staffMembers')) || [];
+            var email = document.getElementById('email').value;
+            var name = document.getElementById('name').value;
+
+            // Update the staff's details
+            staffList = staffList.map(function(staff) {
+                if (staff.email === email) {
+                    staff.name = name;
+                }
+                return staff;
+            });
+
+            // Save the updated staff list to localStorage
+            localStorage.setItem('staffMembers', JSON.stringify(staffList));
+
+            // Redirect back to Manage Profile page
+            window.location.href = 'manage_profile.html';
+        };
+    </script>
+</body>
+</html>

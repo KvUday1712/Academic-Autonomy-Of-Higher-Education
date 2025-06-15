@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard</title>
+    <style>
+        /* Overall Page Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container Styling */
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Header Styling */
+h2 {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 30px;
+}
+
+/* Menu List Styling */
+.menu {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu li {
+    margin-bottom: 15px;
+}
+
+/* Menu Links Styling */
+.menu li a {
+    display: block;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.menu li a:hover {
+    background: linear-gradient(135deg, #185a9d, #43cea2);
+    box-shadow: 0 5px 15px rgba(67, 206, 162, 0.5);
+    transform: translateY(-3px);
+}
+
+.menu li a:active {
+    background: #155074;
+    transform: translateY(0);
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Staff Dashboard</h2>
+        <ul class="menu">
+            <li><a href="add_result.html">Add Result</a></li>
+            <li><a href="add_attendance.html">Add Attendance</a></li>
+            <li><a href="mange_attendence.html">manage Attendance</a></li>
+            <li><a href="reference_book.html">Reference Book</a></li>
+            <li><a href="leave_permission.html">Leave Permission</a></li>
+            <li><a href="login.html">logout</a></li>
+        </ul>
+    </div>
+</body>
+</html>

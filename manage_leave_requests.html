@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Leave Requests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 700px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .request-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .request-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .request-list li {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .request-list button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .request-list button:hover {
+            background-color: #0056b3;
+        }
+        .accept-button {
+            background-color: #28a745;
+        }
+        .accept-button:hover {
+            background-color: #218838;
+        }
+        .reject-button {
+            background-color: #dc3545;
+        }
+        .reject-button:hover {
+            background-color: #c82333;
+        }
+        .notification {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #28a745; /* Green for success messages */
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Manage Leave Requests</h2>
+        <div class="notification" id="notification"></div>
+        <div class="request-list">
+            <ul id="requestList"></ul>
+        </div>
+    </div>
+    <script>
+        function displayRequests() {
+            var leaveRequests = JSON.parse(localStorage.getItem('leaveRequests')) || [];
+            var requestListElement = document.getElementById('requestList');
+            requestListElement.innerHTML = '';
+
+            leaveRequests.forEach(function(request, index) {
+                var listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <strong>Name:</strong> ${request.name}<br>
+                    <strong>Start Date:</strong> ${request.start_date}<br>
+                    <strong>End Date:</strong> ${request.end_date}<br>
+                    <strong>Reason:</strong> ${request.reason}<br>
+                    <button class="accept-button" onclick="handleRequest(${index}, 'accept')">Accept</button>
+                    <button class="reject-button" onclick="handleRequest(${index}, 'reject')">Reject</button>
+                `;
+                requestListElement.appendChild(listItem);
+            });
+        }
+
+        function handleRequest(index, action) {
+            var leaveRequests = JSON.parse(localStorage.getItem('leaveRequests')) || [];
+            var request = leaveRequests[index];
+            var notificationElement = document.getElementById('notification');
+
+            if (action === 'accept') {
+                notificationElement.textContent = `Leave request from ${request.name} accepted.`;
+                localStorage.setItem('requestNotification', `Your leave request has been accepted.`);
+                notificationElement.style.color = '#28a745'; // Green
+            } else if (action === 'reject') {
+                notificationElement.textContent = `Leave request from ${request.name} rejected.`;
+                localStorage.setItem('requestNotification', `Your leave request has been rejected.`);
+                notificationElement.style.color = '#dc3545'; // Red
+            }
+
+            notificationElement.style.display = 'block'; // Show notification
+
+            // Remove the request from the list
+            leaveRequests.splice(index, 1);
+            localStorage.setItem('leaveRequests', JSON.stringify(leaveRequests));
+            displayRequests();
+        }
+
+        // Display requests on page load
+        displayRequests();
+    </script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Options</title>
+    <script>
+        // Load courses from localStorage
+        function loadCourseOptions() {
+            var courseSelect = document.getElementById("courseName");
+            var courses = JSON.parse(localStorage.getItem('courses')) || [];
+            courseSelect.innerHTML = "";
+
+            if (courses.length > 0) {
+                courses.forEach(function(course) {
+                    var option = document.createElement("option");
+                    option.value = course;
+                    option.textContent = course;
+                    courseSelect.appendChild(option);
+                });
+            } else {
+                var option = document.createElement("option");
+                option.textContent = "No courses available";
+                courseSelect.appendChild(option);
+            }
+        }
+
+        // Load staff options from API
+        function loadStaffOptions() {
+            var staffSelect = document.getElementById("staffName");
+            staffSelect.innerHTML = "";
+
+            fetch('http://localhost:3000/get-staff')
+                .then(response => response.json())
+                .then(staffList => {
+                    if (staffList.length === 0) {
+                        var option = document.createElement("option");
+                        option.textContent = "No staff available";
+                        staffSelect.appendChild(option);
+                    } else {
+                        staffList.forEach(function(staff) {
+                            var option = document.createElement("option");
+                            option.value = staff.unique_id;
+                            option.textContent = `${staff.unique_id} - ${staff.name}`;
+                            staffSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading staff options:', error);
+                    var option = document.createElement("option");
+                    option.textContent = "Error loading staff data";
+                    staffSelect.appendChild(option);
+                });
+        }
+
+        // Add a new subject
+        function addSubject() {
+            var subjectName = document.getElementById('subjectName').value;
+            var courseName = document.getElementById('courseName').value;
+            var staffName = document.getElementById('staffName').value;
+
+            var newSubject = {
+                name: subjectName,
+                course: courseName,
+                staff: staffName
+            };
+
+            var subjects = JSON.parse(localStorage.getItem('subjects')) || [];
+            subjects.push(newSubject);
+            localStorage.setItem('subjects', JSON.stringify(subjects));
+
+            loadSubjects(); // Update the table
+            clearForm();
+        }
+
+        // Load subjects into the table
+        function loadSubjects() {
+            var subjects = JSON.parse(localStorage.getItem('subjects')) || [];
+            var tableBody = document.getElementById('subjectsTableBody');
+            tableBody.innerHTML = '';
+
+            if (subjects.length === 0) {
+                var noDataRow = `<tr><td colspan="4">No subjects available. Please add subjects.</td></tr>`;
+                tableBody.innerHTML = noDataRow;
+            } else {
+                subjects.forEach(function(subject, index) {
+                    var row = `
+                        <tr>
+                            <td>${subject.name}</td>
+                            <td>${subject.course}</td>
+                            <td>${subject.staff}</td>
+                            <td>
+                                <button onclick="deleteSubject(${index})">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            }
+        }
+
+        // Clear the form fields
+        function clearForm() {
+            document.getElementById('subjectName').value = '';
+            document.getElementById('courseName').value = '';
+            document.getElementById('staffName').value = '';
+            document.getElementById("addSubjectForm").style.display = "none";
+        }
+
+        // Delete a subject
+        function deleteSubject(index) {
+            var subjects = JSON.parse(localStorage.getItem('subjects')) || [];
+            subjects.splice(index, 1);
+            localStorage.setItem('subjects', JSON.stringify(subjects));
+            loadSubjects();
+        }
+
+        // Show the Add Subject form
+        function showAddSubjectForm() {
+            document.getElementById("addSubjectForm").style.display = "block";
+            loadCourseOptions();
+            loadStaffOptions();
+        }
+
+        window.onload = function() {
+            loadSubjects();
+        };
+    </script>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f4f7fc;
+            color: #333;
+        }
+
+        a {
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1rem;
+        color: #3498db;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+    
+        /* Container Styling */
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 40px auto;
+        }
+    
+        /* Option Header Styling */
+        .option {
+            margin-top: 20px;
+            text-align: center;
+        }
+    
+        .option a {
+            display: inline-block;
+            padding: 18px 30px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+    
+        .option a:hover {
+            background-color: #0056b3;
+        }
+    
+        .option a:active {
+            background-color: #003d7a;
+        }
+    
+        /* Dropdown Form Styling */
+        .dropdown {
+            display: none;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+    
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    
+        .form-container h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    
+        .form-container label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    
+        .form-container input,
+        .form-container select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+    
+        .form-container button,
+        .form-container a.button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+    
+        .form-container button:hover,
+        .form-container a.button:hover {
+            background-color: #0056b3;
+        }
+    
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        td:hover {
+            background-color: #f1f1f1;
+        }
+    
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+    
+            .option a {
+                font-size: 1.1rem;
+                padding: 12px 20px;
+            }
+    
+            .form-container input,
+            .form-container select {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Options</h1>
+
+        <div class="option">
+            <a href="#" onclick="showAddSubjectForm()">Add Subject</a>
+        </div>
+
+        <div class="dropdown" id="addSubjectForm">
+            <div class="form-container">
+                <h2>Add a New Subject</h2>
+                <label for="subjectName">Subject Name</label>
+                <input type="text" id="subjectName" required>
+                <label for="courseName">Course</label>
+                <select id="courseName" required></select>
+                <label for="staffName">Staff</label>
+                <select id="staffName" required></select>
+                <button type="button" onclick="addSubject()">Add Subject</button>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject Name</th>
+                    <th>Course</th>
+                    <th>Staff</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="subjectsTableBody"></tbody>
+        </table>
+        <a href="admin_dashboard.html">Go to admin-dashboard</a>
+    </div>
+</body>
+</html>

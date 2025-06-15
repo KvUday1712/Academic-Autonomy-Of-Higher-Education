@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reference Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: #6c757d;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        .message {
+            margin-top: 15px;
+            color: green;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Reference Book</h2>
+        <form id="referenceForm">
+            <div class="form-group">
+                <label for="author">Author Name</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+            <div class="form-group">
+                <label for="title">Book Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="pdfLink">Paste PDF Link</label>
+                <input type="text" id="pdfLink" name="pdfLink" placeholder="https://example.com/book.pdf" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit</button>
+            </div>
+            <a href="staff_dashboard.html" class="back-button">Back to Dashboard</a>
+            <div id="message" class="message"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('referenceForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var author = document.getElementById('author').value.trim();
+            var title = document.getElementById('title').value.trim();
+            var pdfLink = document.getElementById('pdfLink').value.trim();
+
+            // Validation
+            if (!author || !title || !pdfLink) {
+                alert('All fields are required!');
+                return;
+            }
+
+            // Save data to localStorage
+            var bookList = JSON.parse(localStorage.getItem('bookList')) || [];
+            bookList.push({ author: author, title: title, pdf: pdfLink });
+            localStorage.setItem('bookList', JSON.stringify(bookList));
+
+            // Display success message
+            var messageElement = document.getElementById('message');
+            messageElement.textContent = 'Reference book submitted successfully!';
+            messageElement.style.color = 'green';
+
+            // Clear the form fields
+            document.getElementById('author').value = '';
+            document.getElementById('title').value = '';
+            document.getElementById('pdfLink').value = '';
+        });
+    </script>
+</body>
+</html>

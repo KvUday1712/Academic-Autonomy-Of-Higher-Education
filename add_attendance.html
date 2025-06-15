@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Attendance</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            max-width: 90%;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-group select, .form-group input[type="checkbox"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus, .form-group input[type="checkbox"]:focus {
+            border-color: #007bff;
+        }
+
+        #studentList label {
+            margin-left: 8px;
+            font-weight: normal;
+            color: #333;
+        }
+
+        #studentList .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+
+        #studentList p {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Attendance</h1>
+        <form id="attendanceForm">
+            <div class="form-group">
+                <label for="date">Select Date</label>
+                <select id="date" name="date" required></select>
+            </div>
+            <div class="form-group">
+                <label for="month">Select Month</label>
+                <select id="month" name="month" required>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="year">Select Year</label>
+                <select id="year" name="year" required></select>
+            </div>
+            <div id="studentList">
+                <label>Mark Absentees:</label>
+                <!-- Student checkboxes will be populated dynamically here -->
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit Attendance</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var dateDropdown = document.getElementById('date');
+            var yearDropdown = document.getElementById('year');
+            var studentList = document.getElementById('studentList');
+
+            // Get today's date
+            var today = new Date();
+            var currentDate = today.getDate();
+            var currentMonth = today.getMonth() + 1; // Months are 0-indexed
+            var currentYear = today.getFullYear();
+
+            // Set the date dropdown to today's date
+            var option = document.createElement('option');
+            option.value = currentDate < 10 ? '0' + currentDate : currentDate; // Add leading zero if needed
+            option.textContent = option.value; // Display the current date
+            dateDropdown.appendChild(option);
+
+            // Set the month dropdown to the current month
+            document.getElementById('month').value = currentMonth < 10 ? '0' + currentMonth : currentMonth;
+
+            // Set the year dropdown to the current year
+            var yearOption = document.createElement('option');
+            yearOption.value = currentYear;
+            yearOption.textContent = currentYear;
+            yearDropdown.appendChild(yearOption);
+
+            // Fetch students from the backend (same API you use for student table)
+            fetch('http://localhost:3000/get-students') // Replace with your API endpoint
+                .then(response => response.json())
+                .then(studentsList => {
+                    // Display student checkboxes dynamically
+                    studentsList.forEach((student, index) => {
+                        var div = document.createElement('div');
+                        div.className = 'form-group';
+
+                        var checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = 'student-' + index;
+                        checkbox.value = student.name; // Use student name as value
+
+                        var label = document.createElement('label');
+                        label.htmlFor = 'student-' + index;
+                        label.textContent = student.name;
+
+                        div.appendChild(checkbox);
+                        div.appendChild(label);
+                        studentList.appendChild(div);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching student data:', error);
+                    studentList.innerHTML = '<p>Error loading students</p>';
+                });
+
+            // Handle attendance form submission
+            document.getElementById('attendanceForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var selectedDate = document.getElementById('date').value;
+                var selectedMonth = document.getElementById('month').value;
+                var selectedYear = document.getElementById('year').value;
+
+                var key = selectedYear + '-' + selectedMonth + '-' + selectedDate;
+                var absentees = [];
+                var checkboxes = document.querySelectorAll('#studentList input[type="checkbox"]:checked');
+                checkboxes.forEach(function(checkbox) {
+                    absentees.push(checkbox.value);
+                });
+
+                var attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
+                attendanceData[key] = absentees;
+
+                localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+
+                alert('Attendance submitted successfully!');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Staff Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .back {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Staff Profile</h1>
+        <form id="editStaffForm">
+            <input type="hidden" id="oldEmail" name="oldEmail">
+            <div class="form-group">
+                <label for="staffName">Name</label>
+                <input type="text" id="staffName" name="staffName" required>
+            </div>
+            <div class="form-group">
+                <label for="staffEmail">Email</label>
+                <input type="email" id="staffEmail" name="staffEmail" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Update Staff</button>
+            </div>
+        </form>
+        <div class="back">
+            <a href="manage_profile.html">Back to Manage Profiles</a>
+        </div>
+    </div>
+
+    <script>
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            var regex = new RegExp('[?&]' + name + '=([^&#]*)');
+            var results = regex.exec(window.location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Load staff profile data
+        window.onload = function() {
+            var email = getUrlParameter('email');
+            var staffList = JSON.parse(localStorage.getItem('staffList')) || [];
+            var staff = staffList.find(staff => staff.email === email);
+
+            if (staff) {
+                document.getElementById('oldEmail').value = staff.email;
+                document.getElementById('staffName').value = staff.name;
+                document.getElementById('staffEmail').value = staff.email;
+            } else {
+                alert('Staff not found');
+                window.location.href = 'manage_profile.html';
+            }
+        };
+
+        // Handle form submission
+        document.getElementById('editStaffForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var oldEmail = document.getElementById('oldEmail').value;
+            var newName = document.getElementById('staffName').value;
+            var newEmail = document.getElementById('staffEmail').value;
+
+            var staffList = JSON.parse(localStorage.getItem('staffList')) || [];
+            var staffIndex = staffList.findIndex(staff => staff.email === oldEmail);
+
+            if (staffIndex !== -1) {
+                // Update the staff member details
+                staffList[staffIndex] = { name: newName, email: newEmail };
+                localStorage.setItem('staffList', JSON.stringify(staffList));
+                window.location.href = 'manage_profile.html';
+            } else {
+                alert('Staff not found');
+            }
+        });
+    </script>
+</body>
+</html>

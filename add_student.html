@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student</title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+            color: #333;
+        }
+
+        a {
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1rem;
+        color: #3498db;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+
+        /* Container Styling */
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 50px auto;
+            text-align: left;
+        }
+
+        /* Heading Styling */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        /* Form Group Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dcdcdc;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #8e44ad;
+            outline: none;
+            box-shadow: 0 0 8px rgba(142, 68, 173, 0.4);
+            background: #fff;
+        }
+
+        /* Button Styling */
+        .form-group button {
+            width: 100%;
+            padding: 14px;
+            background: #8e44ad;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background: #732d91;
+            box-shadow: 0 6px 20px rgba(115, 45, 145, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .form-group button:active {
+            background: #5b216d;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .form-group button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Student</h1>
+        <form id="addStudentForm">
+            <!-- USN Field -->
+            <div class="form-group">
+                <label for="studentUSN">USN</label>
+                <input type="text" id="studentUSN" name="studentUSN" required pattern="^[0-9A-Za-z]+$" title="USN should contain only alphanumeric characters.">
+            </div>
+            
+            <!-- Name Field -->
+            <div class="form-group">
+                <label for="studentName">Name</label>
+                <input type="text" id="studentName" name="studentName" required pattern="^[A-Za-z\s]+$" title="Name should contain only letters and spaces.">
+            </div>
+            
+            <!-- Email Field -->
+            <div class="form-group">
+                <label for="studentEmail">Email</label>
+                <input type="email" id="studentEmail" name="studentEmail" required title="Enter a valid email address.">
+            </div>
+            
+            <!-- Course Field -->
+            <div class="form-group">
+                <label for="studentCourse">Course</label>
+                <select id="studentCourse" name="studentCourse" required>
+                    <option value="">Select Course</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+            
+            <!-- Password Field -->
+            <div class="form-group">
+                <label for="studentPassword">Password</label>
+                <input type="password" id="studentPassword" name="studentPassword" required minlength="6" title="Password must be at least 6 characters long.">
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="form-group">
+                <button type="submit">Add Student</button>
+            </div>
+            <a href="admin_dashboard.html">Go to admin-dashboard</a>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const courseSelect = document.getElementById('studentCourse');
+
+            // Fetch course options from localStorage
+            const courses = JSON.parse(localStorage.getItem('courses')) || [];
+            courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course;
+                option.textContent = course;
+                courseSelect.appendChild(option);
+            });
+
+            document.getElementById('addStudentForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const studentData = {
+                    usn: document.getElementById('studentUSN').value,
+                    name: document.getElementById('studentName').value,
+                    email: document.getElementById('studentEmail').value,
+                    course: courseSelect.value,
+                    password: document.getElementById('studentPassword').value,
+                };
+
+                fetch('http://localhost:3000/add-student', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(studentData),
+                })
+                .then(response => {
+                    if (response.ok) return response.text();
+                    throw new Error('Failed to add student');
+                })
+                .then(message => {
+                    alert(message);
+                    document.getElementById('addStudentForm').reset();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add student. Please try again.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

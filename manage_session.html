@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Sessions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .session-list {
+            margin-top: 20px;
+        }
+        .session-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .session-list ul li {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .session-list ul li button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .session-list ul li button:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <script>
+        function loadSessions() {
+            var sessionList = document.getElementById('sessionList');
+            var sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+
+            sessionList.innerHTML = '';
+
+            if (sessions.length > 0) {
+                sessions.forEach(function(session, index) {
+                    var listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        ${session} 
+                        <button onclick="deleteSession(${index})">Delete</button>
+                    `;
+                    sessionList.appendChild(listItem);
+                });
+            } else {
+                sessionList.innerHTML = '<p>No sessions available. Please add a session.</p>';
+            }
+        }
+
+        function deleteSession(index) {
+            var sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            sessions.splice(index, 1);
+            localStorage.setItem('sessions', JSON.stringify(sessions));
+            loadSessions();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSessions);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Sessions</h1>
+        <div class="session-list">
+            <ul id="sessionList">
+                <!-- Sessions will be dynamically loaded here -->
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

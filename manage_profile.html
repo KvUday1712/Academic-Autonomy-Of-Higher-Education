@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Staff</title>
+    <style>
+        /* Your CSS styles here */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+            color: #333;
+        }
+        a {
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1rem;
+        color: #3498db;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 1300px;
+            margin: 50px auto;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            font-size: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #8e44ad;
+            color: white;
+            text-transform: uppercase;
+        }
+        tr:nth-child(even) {
+            background-color: #f4f4f4;
+        }
+        tr:hover {
+            background-color: #eaeaea;
+        }
+        .delete-btn {
+            padding: 10px 15px;
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Staff</h1>
+        <table id="staffTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Qualification</th>
+                    <th>Specialization</th>
+                    <th>Designation</th>
+                    <th>Date of Joining</th>
+                    <th>Currently Associated</th>
+                    <th>Unique ID</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic data goes here -->
+            </tbody>
+        </table>
+        <a href="admin_dashboard.html">Go to admin-dashboard</a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('http://localhost:3000/get-staff') // Fetch staff data from the backend
+                .then(response => response.json())
+                .then(staffMembers => {
+                    var staffTableBody = document.getElementById('staffTable').getElementsByTagName('tbody')[0];
+
+                    if (staffMembers.length === 0) {
+                        var row = staffTableBody.insertRow();
+                        var cell = row.insertCell();
+                        cell.colSpan = 10;
+                        cell.textContent = 'No staff members found.';
+                        return;
+                    }
+
+                    staffMembers.forEach(function (staff) {
+                        var row = staffTableBody.insertRow();
+
+                        row.insertCell().textContent = staff.name;
+                        row.insertCell().textContent = staff.email;
+                        row.insertCell().textContent = staff.course;
+                        row.insertCell().textContent = staff.qualification;
+                        row.insertCell().textContent = staff.specialization;
+                        row.insertCell().textContent = staff.designation;
+
+                        const dateOfJoining = new Date(staff.date_of_joining).toISOString().split('T')[0];
+                        row.insertCell().textContent = dateOfJoining;
+
+                        row.insertCell().textContent = staff.currently_associated;
+                        row.insertCell().textContent = staff.unique_id;
+
+                        // Add Delete button in the "Action" column
+                        var actionCell = row.insertCell();
+                        var deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.className = 'delete-btn';
+                        deleteButton.onclick = function () {
+                            deleteStaff(staff.unique_id, row);
+                        };
+                        actionCell.appendChild(deleteButton);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching staff data:', error);
+                });
+        });
+
+        function deleteStaff(uniqueId, tableRow) {
+            if (confirm('Are you sure you want to delete this staff member?')) {
+                fetch('http://localhost:3000/delete-staff', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ unique_id: uniqueId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table on successful deletion
+                        tableRow.remove();
+                        alert('Staff member deleted successfully!');
+                    } else {
+                        alert('Failed to delete staff member: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during staff deletion:', error);
+                    alert('An error occurred. Please try again later.');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

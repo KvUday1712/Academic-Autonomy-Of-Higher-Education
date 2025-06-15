@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Reference Books</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            padding-top: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+        }
+        h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        .book-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .book-item h3 {
+            margin: 0 0 10px;
+        }
+        .book-item a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .book-item a:hover {
+            text-decoration: underline;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: #6c757d;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Uploaded Reference Books</h2>
+        <div id="bookList"></div>
+        <a href="staff_dashboard.html" class="back-button">Back to Dashboard</a>
+        <button onclick="clearLocalStorage()">Delete All</button>
+        
+    </div>
+
+    <script>
+        function clearLocalStorage() {
+        localStorage.clear();
+        alert("Local Storage has been cleared.");
+}
+        window.onload = function() {
+            var bookList = JSON.parse(localStorage.getItem('bookList')) || [];
+
+            var bookListContainer = document.getElementById('bookList');
+            if (bookList.length === 0) {
+                bookListContainer.innerHTML = '<p>No books uploaded yet.</p>';
+            } else {
+                bookList.forEach(function(book) {
+                    var bookItem = document.createElement('div');
+                    bookItem.classList.add('book-item');
+
+                    var bookTitle = document.createElement('h3');
+                    var bookTitleLink = document.createElement('a');
+                    bookTitleLink.href = book.pdf;  // Link to the PDF file (Google Drive URL)
+                    bookTitleLink.target = '_blank';  // Opens in the same tab
+                    bookTitleLink.textContent = book.title;
+                    
+                    var bookAuthor = document.createElement('p');
+                    bookAuthor.textContent = 'Author: ' + book.author;
+
+                    bookItem.appendChild(bookTitleLink);
+                    bookItem.appendChild(bookAuthor);
+
+                    bookListContainer.appendChild(bookItem);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

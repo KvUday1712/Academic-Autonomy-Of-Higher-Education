@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Permission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .notification {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #28a745; /* Green for success messages */
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Leave Permission</h2>
+        <form id="leaveForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="start_date">Start Date</label>
+                <input type="date" id="start_date" name="start_date" required min="" onfocus="this.min = new Date().toISOString().split('T')[0]">
+            </div>
+            <div class="form-group">
+                <label for="end_date">End Date</label>
+                <input type="date" id="end_date" name="end_date" required>
+            </div>
+            <div class="form-group">
+                <label for="reason">Reason</label>
+                <textarea id="reason" name="reason" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit Request</button>
+            </div>
+        </form>
+        <div class="notification" id="notification"></div>
+    </div>
+    <script>
+        document.getElementById('leaveForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var name = document.getElementById('name').value;
+            var startDate = document.getElementById('start_date').value;
+            var endDate = document.getElementById('end_date').value;
+            var reason = document.getElementById('reason').value;
+
+            var leaveRequest = { name: name, start_date: startDate, end_date: endDate, reason: reason };
+
+            // Store data in local storage
+            var leaveRequests = JSON.parse(localStorage.getItem('leaveRequests')) || [];
+            leaveRequests.push(leaveRequest);
+            localStorage.setItem('leaveRequests', JSON.stringify(leaveRequests));
+
+            // Optionally display a success message or redirect
+            alert('Leave request submitted successfully!');
+
+            // Notify the Manage Leave Requests page
+            localStorage.setItem('requestNotification', `Leave request from ${name} submitted.`);
+            
+            document.getElementById('leaveForm').reset();
+        });
+
+        // Check for notification message
+        var notificationMessage = localStorage.getItem('requestNotification');
+        if (notificationMessage) {
+            document.getElementById('notification').textContent = notificationMessage;
+            document.getElementById('notification').style.display = 'block';
+            localStorage.removeItem('requestNotification'); // Clear the notification after displaying
+        }
+    </script>
+</body>
+</html>

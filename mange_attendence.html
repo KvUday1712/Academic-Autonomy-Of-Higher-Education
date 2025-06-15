@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Attendance</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 600px;
+            max-width: 90%;
+        }
+
+        h1 {
+            font-size: 26px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus {
+            border-color: #007bff;
+        }
+
+        .form-group button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+
+        #absenteeList {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .absentee-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .mark-present-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .mark-present-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Manage Attendance</h1>
+        <form id="attendanceForm">
+            <div class="form-group">
+                <label for="date">Select Date</label>
+                <select id="date" name="date" required></select>
+            </div>
+            <div class="form-group">
+                <label for="month">Select Month</label>
+                <select id="month" name="month" required>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">View Absentees</button>
+            </div>
+        </form>
+        <div id="absenteeList"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var dateDropdown = document.getElementById('date');
+            var absenteeList = document.getElementById('absenteeList');
+
+            // Populate date dropdown (1-31)
+            for (var i = 1; i <= 31; i++) {
+                var option = document.createElement('option');
+                option.value = i < 10 ? '0' + i : i;
+                option.textContent = i;
+                dateDropdown.appendChild(option);
+            }
+
+            document.getElementById('attendanceForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Get the selected date components
+                var selectedDate = document.getElementById('date').value;
+                var selectedMonth = document.getElementById('month').value;
+                var currentYear = new Date().getFullYear();
+
+                // Form the key in YYYY-MM-DD format
+                var key = `${currentYear}-${selectedMonth}-${selectedDate}`;
+
+                // Retrieve attendance data from localStorage
+                var attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
+
+                // Get absentees for the selected date
+                var absentees = attendanceData[key] || [];
+
+                // Clear and populate the absentee list
+                absenteeList.innerHTML = ''; // Clear existing list
+                if (absentees.length > 0) {
+                    absentees.forEach(function(absentee) {
+                        var div = document.createElement('div');
+                        div.className = 'absentee-item';
+
+                        var nameSpan = document.createElement('span');
+                        nameSpan.textContent = absentee;
+
+                        var button = document.createElement('button');
+                        button.className = 'mark-present-btn';
+                        button.textContent = '✓ Mark Present';
+                        button.onclick = function() {
+                            markPresent(absentee, key);
+                        };
+
+                        div.appendChild(nameSpan);
+                        div.appendChild(button);
+                        absenteeList.appendChild(div);
+                    });
+                } else {
+                    absenteeList.innerHTML = '<p>No absentees found for the selected date.</p>';
+                }
+            });
+
+            function markPresent(studentName, dateKey) {
+                var attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
+                var absentees = attendanceData[dateKey] || [];
+
+                // Remove the student from the absentee list
+                attendanceData[dateKey] = absentees.filter(absentee => absentee !== studentName);
+
+                // Update localStorage
+                localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+
+                // Refresh the absentee list
+                document.getElementById('attendanceForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>
